@@ -35,7 +35,7 @@ bun scaffold 1 The First Day
 
 ## Solving Each Day
 
-Run the `solve` `package.json` script to execute the solution code for given day.
+Run the `solve` `package.json` script to execute the solution code for a given day.
 
 ```bash
 bun solve 1
