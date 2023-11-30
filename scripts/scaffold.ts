@@ -1,6 +1,6 @@
 import { Glob } from "bun";
 import { mkdir } from "fs/promises";
-import { padDay } from "../lib/helpers";
+import { inRange, padDay } from "../lib/helpers";
 
 const [, , day, ...titleWords] = Bun.argv;
 const dayPadded = padDay(day); // Pad the day number so they appear in order in the file structure
@@ -40,6 +40,8 @@ const response = await fetch(`https://adventofcode.com/2023/day/${day}/input`, {
   },
 });
 
-console.log(response);
-
-await Bun.write(`${solutionDir}/input.txt`, response);
+if (inRange(response.status, 200, 299)) {
+  await Bun.write(`${solutionDir}/input.txt`, response);
+} else {
+  console.log(response);
+}
