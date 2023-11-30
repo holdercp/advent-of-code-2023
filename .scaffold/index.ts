@@ -5,7 +5,7 @@ console.log(`Part 1: `, await one.solve());
 console.log(`Part 2: `, await two.solve());
 
 export async function parseInput(example = false) {
-  const file = `input${example ? "-example" : ""}.txt`;
+  const file = `${import.meta.dir}/input${example ? "-example" : ""}.txt`;
   const input = await Bun.file(file).text();
 
   return input;

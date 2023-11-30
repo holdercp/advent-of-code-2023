@@ -13,6 +13,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "scaffold": "bun ./scripts/scaffold.ts"
+    "scaffold": "bun ./scripts/scaffold.ts",
+    "solve": "bun ./scripts/solve.ts"
   }
 }
