@@ -1,6 +1,7 @@
 import { Glob } from "bun";
 import { mkdir } from "fs/promises";
-import { inRange, padDay } from "../lib/helpers";
+import { padDay } from "../lib/helpers";
+import { inRange } from "../lib/utils";
 
 const [, , day, ...titleWords] = Bun.argv;
 const dayPadded = padDay(day); // Pad the day number so they appear in order in the file structure

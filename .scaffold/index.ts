@@ -8,5 +8,5 @@ export async function parseInput(example = false) {
   const file = `${import.meta.dir}/input${example ? "-example" : ""}.txt`;
   const input = await Bun.file(file).text();
 
-  return input;
+  return input.trim().split("\n");
 }
