@@ -1,5 +1,5 @@
 import { Glob } from "bun";
-import { mkdir } from "fs/promises";
+import { exists, mkdir } from "fs/promises";
 import { padDay } from "../lib/helpers";
 import { inRange } from "../lib/utils";
 
@@ -15,6 +15,13 @@ if (isNaN(parseInt(day, 10))) {
 
 // Copy over scaffold files to given day directory
 const solutionDir = `solutions/${dayPadded}`;
+const dirExists = await exists(solutionDir);
+
+if (dirExists) {
+  console.log("Directory has already exists!");
+  process.exit();
+}
+
 await mkdir(solutionDir, { recursive: true });
 
 const scaffoldDir = ".scaffold";
