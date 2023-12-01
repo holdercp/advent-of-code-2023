@@ -1,7 +1,15 @@
 import { parseInput } from ".";
 
 export async function solve() {
-  const input = await parseInput();
+  const calibration = await parseInput();
 
-  return "Not implemented.";
+  const corrected = calibration.map((c) => {
+    const digits = c.replaceAll(/[^0-9]/g, "");
+    const first = digits[0];
+    const last = digits[digits.length - 1];
+
+    return parseInt(`${first}${last}`, 10);
+  });
+
+  return corrected.reduce((sum, d) => sum + d, 0);
 }
