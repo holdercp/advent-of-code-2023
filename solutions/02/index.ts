@@ -1,9 +1,6 @@
 import * as one from "./part-1";
 import * as two from "./part-2";
 
-console.log(`Part 1: `, await one.solve());
-console.log(`Part 2: `, await two.solve());
-
 const colors = ["red", "green", "blue"] as const;
 
 type Color = (typeof colors)[number];
@@ -19,7 +16,7 @@ export type Games = {
 };
 
 export function isColor(c: string): c is Color {
-  return c in colors;
+  return colors.includes(c as Color);
 }
 
 function parseColorPair(pair: string): [Color, number] {
@@ -59,3 +56,6 @@ export async function parseInput(example = false) {
 
   return games;
 }
+
+console.log(`Part 1: `, await one.solve());
+console.log(`Part 2: `, await two.solve());
