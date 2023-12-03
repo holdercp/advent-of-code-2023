@@ -39,3 +39,9 @@ Run the `solve` `package.json` script to execute the solution code for a given d
 ```bash
 bun solve 1
 ```
+
+You can pass a `--debug` or `-d` flag to launch the [Bun web debugger](https://bun.sh/guides/runtime/web-debugger).
+
+```bash
+bun solve 1 -d
+```
