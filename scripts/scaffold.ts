@@ -1,13 +1,12 @@
 import { Glob } from "bun";
 import { exists, mkdir } from "fs/promises";
 import { padDay } from "../lib/helpers";
-import { inRange } from "../lib/utils";
+import { inRange, stringIsInt } from "../lib/utils";
 
-const [, , day, ...titleWords] = Bun.argv;
+const [, , day] = Bun.argv;
 const dayPadded = padDay(day); // Pad the day number so they appear in order in the file structure
-const title = titleWords.join(" ");
 
-if (isNaN(parseInt(day, 10))) {
+if (!stringIsInt) {
   throw new Error(
     `The first argument should be the day number. You gave "${day}".`,
   );
@@ -29,14 +28,6 @@ const scaffoldGlob = new Glob("*");
 for await (const file of scaffoldGlob.scan(scaffoldDir)) {
   const input = Bun.file(`${scaffoldDir}/${file}`);
   const output = Bun.file(`${solutionDir}/${file}`);
-
-  // If a title was given, replace the recap.md placeholder with it
-  if (title && file === "recap.md") {
-    const recapData = await input.text();
-    const titledData = recapData.replace("Title", title);
-    await Bun.write(output, titledData);
-    continue;
-  }
 
   // Remove the ts-nocheck comment from our scaffold lib.ts
   if (file === "lib.ts") {

@@ -28,9 +28,8 @@ The first argument should be the day number and the remaining arguments should b
 
 ```bash
 # The following will create a solutions/01 directory and place all necessary files there.
-# It will also replace the recap.md title placeholder with "The First Day"
 
-bun scaffold 1 The First Day
+bun scaffold 1
 ```
 
 ## Solving Each Day
