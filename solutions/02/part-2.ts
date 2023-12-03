@@ -1,4 +1,4 @@
-import { isColor, parseInput, Reveal } from ".";
+import { isColor, parseInput, Reveal } from "./lib";
 
 function findFewest(game: Reveal[]) {
   const maxes = {

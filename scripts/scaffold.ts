@@ -38,6 +38,14 @@ for await (const file of scaffoldGlob.scan(scaffoldDir)) {
     continue;
   }
 
+  // Remove the ts-nocheck comment from our scaffold lib.ts
+  if (file === "lib.ts") {
+    const libData = await input.text();
+    const tsEnabledData = libData.replace("// @ts-nocheck", "").trimStart();
+    await Bun.write(output, tsEnabledData);
+    continue;
+  }
+
   await Bun.write(output, input);
 }
 

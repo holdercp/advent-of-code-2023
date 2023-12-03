@@ -11,4 +11,5 @@ cmd.push(`./solutions/${dayPadded}/index.ts`);
 
 Bun.spawnSync(cmd, {
   stdout: "inherit",
+  stderr: "inherit",
 });

@@ -1,4 +1,4 @@
-import { parseInput } from ".";
+import { parseInput } from "./lib";
 import * as utils from "../../lib/utils";
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"] as const;
@@ -30,11 +30,11 @@ const digitsMap = {
 };
 
 function isDigit(s: string): s is Digit {
-  return s in digits;
+  return digits.includes(s as Digit);
 }
 
 function isDigitWord(s: string): s is DigitWord {
-  return s in digitWords;
+  return digitWords.includes(s as DigitWord);
 }
 
 function convertWordToDigit(word: string) {

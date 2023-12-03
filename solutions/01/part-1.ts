@@ -1,4 +1,4 @@
-import { parseInput } from ".";
+import { parseInput } from "./lib";
 
 export async function solve() {
   const calibration = await parseInput();

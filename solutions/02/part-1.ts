@@ -1,4 +1,4 @@
-import { Games, Reveal, isColor, parseInput } from ".";
+import { Games, Reveal, isColor, parseInput } from "./lib";
 
 const LIMITS = {
   red: 12,
