@@ -12,7 +12,7 @@ Install the dependencies using Bun.
 bun install
 ```
 
-Create a `.env` file at the root that contains your Advent `session` cookie. You can find this cookie value by inspecting the network request made to `https://adventofcode.com/2023/day/DAY_NUMBER/input` in the browser.
+Create a `.env` file at the root that contains your Advent `session` cookie. You can find this cookie value by inspecting the network request made to `https://adventofcode.com` in the browser.
 
 ```bash
 # .env
