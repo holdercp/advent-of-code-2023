@@ -1,9 +1,14 @@
 import { padDay } from "../lib/helpers";
 
-const [, , day] = Bun.argv;
+const [, , day, debug] = Bun.argv;
 const dayPadded = padDay(day);
 
-const proc = Bun.spawn(["bun", `./solutions/${dayPadded}/index.ts`]);
+const cmd = ["bun"];
+if (debug === "-d" || debug === "--debug") {
+  cmd.push("--inspect-brk");
+}
+cmd.push(`./solutions/${dayPadded}/index.ts`);
 
-const out = await new Response(proc.stdout).text();
-console.log(out);
+Bun.spawnSync(cmd, {
+  stdout: "inherit",
+});
