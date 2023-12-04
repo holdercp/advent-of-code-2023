@@ -24,8 +24,6 @@ ADVENT_SESSION=YOUR_SESSION_COOKIE
 
 I've provided a `scaffold` `package.json` script that will set up the files needed for solving both parts for each day, as well as pulling your unique input. It will output them in a `solutions/DAY_NUMBER` directory.
 
-The first argument should be the day number and the remaining arguments should be the words in the day's title. The title argument is optional.
-
 ```bash
 # The following will create a solutions/01 directory and place all necessary files there.
 
