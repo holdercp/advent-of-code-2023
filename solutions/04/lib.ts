@@ -7,6 +7,14 @@ function parseNum(numStr: string) {
     .map(Number);
 }
 
+export function findDuplicates(a: number[], b: number[]) {
+  const d: number[] = [];
+  b.forEach((n) => {
+    if (a.includes(n)) d.push(n);
+  });
+  return d;
+}
+
 export async function parseInput() {
   const input = await readInput(import.meta.dir);
   const cards = input

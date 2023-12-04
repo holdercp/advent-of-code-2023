@@ -1,12 +1,4 @@
-import { parseInput } from "./lib";
-
-function findDuplicates(a: number[], b: number[]) {
-  const d: number[] = [];
-  b.forEach((n) => {
-    if (a.includes(n)) d.push(n);
-  });
-  return d;
-}
+import { parseInput, findDuplicates } from "./lib";
 
 export async function solve() {
   const cards = await parseInput();
