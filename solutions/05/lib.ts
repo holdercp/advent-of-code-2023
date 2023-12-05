@@ -59,11 +59,27 @@ function parseSeeds(s: string) {
   return s.split(": ")[1].split(" ").map(Number);
 }
 
+function parsedSeedPairs(s: string) {
+  const parsedSeeds = parseSeeds(s);
+
+  const parsed = [];
+  for (let i = 0; i < parsedSeeds.length - 1; i += 2) {
+    const start = parsedSeeds[i];
+    const len = parsedSeeds[i + 1];
+
+    parsed.push([start, start + (len - 1)]);
+  }
+
+  return parsed;
+}
+
 export async function parseInput() {
   const input = await readInput(import.meta.dir);
   const [seedsRaw, ...mapsRaw] = input.split("\n\n");
 
   const seeds = parseSeeds(seedsRaw);
+  const seedPairs = parsedSeedPairs(seedsRaw);
+
   const maps = mapsRaw
     .map(parseMapsMapper)
     .reduce((acc, { title, parsedMap }) => {
@@ -73,5 +89,5 @@ export async function parseInput() {
       return acc;
     }, {} as Maps);
 
-  return { seeds, maps };
+  return { seeds, maps, seedPairs };
 }
