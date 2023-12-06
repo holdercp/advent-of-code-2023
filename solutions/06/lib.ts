@@ -15,5 +15,12 @@ export async function parseInput() {
   const times = parseRaw(timeRaw, "Time: ");
   const distances = parseRaw(disRaw, "Distance: ");
 
-  return { times, distances };
+  // Part 2
+  const time = parseInt(timeRaw.split("Time: ")[1].replaceAll(" ", ""), 10);
+  const distance = parseInt(
+    disRaw.split("Distance: ")[1].replaceAll(" ", ""),
+    10,
+  );
+
+  return { times, distances, time, distance };
 }
