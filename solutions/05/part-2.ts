@@ -24,10 +24,10 @@ function mapBuilder(mapData: DestMap[]) {
       // Range is completely contained in bounds
       if (pStart >= m.src.start && pEnd <= m.src.end) {
         const sOffset = pStart - m.src.start;
-        const eOffset = m.src.end - pEnd;
+        const eOffset = pEnd - m.src.start;
 
         const dStart = m.dest.start + sOffset;
-        const dEnd = m.dest.end - eOffset;
+        const dEnd = m.dest.start + eOffset;
 
         pairs.push([dStart, dEnd]);
         break;
@@ -45,7 +45,7 @@ function mapBuilder(mapData: DestMap[]) {
       if (pStart >= m.src.start && pEnd > m.src.end) {
         const sOffset = pStart - m.src.start;
 
-        const dStart = m.dest.start - sOffset;
+        const dStart = m.dest.start + sOffset;
         const dEnd = m.dest.end;
 
         pairs.push([dStart, dEnd]);
@@ -56,10 +56,10 @@ function mapBuilder(mapData: DestMap[]) {
 
       // Overlaps lower bounds
       if (pStart < m.src.start && pEnd <= m.src.end) {
-        const eOffset = m.src.end - pEnd;
+        const eOffset = pEnd - m.src.start;
 
         const dStart = m.dest.start;
-        const dEnd = m.dest.end - eOffset;
+        const dEnd = m.dest.start + eOffset;
 
         pairs.push([dStart, dEnd]);
 
@@ -94,8 +94,6 @@ export async function solve() {
     .flatMap(mapBuilder(maps["light-to-temperature"]))
     .flatMap(mapBuilder(maps["temperature-to-humidity"]))
     .flatMap(mapBuilder(maps["humidity-to-location"]));
-
-  console.log(locations);
 
   return Math.min(...locations.map(([ls]) => ls));
 }
