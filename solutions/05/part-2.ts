@@ -2,25 +2,81 @@ import { DestMap, parseInput } from "./lib";
 
 function mapBuilder(mapData: DestMap[]) {
   return function mapper(pair: number[]) {
-    const [pStart, pEnd] = pair;
-
-    // const sortedMaps = mapData.toSorted((a, b) => {
-    //   if (a.src.start < b.src.start) return -1;
-    //   if (a.src.start > b.src.start) return 1;
-    //   return 0;
-    // });
-
+    const remainingPairs = [[...pair]];
+    const unmatchedPairs = [];
     const pairs = [];
-    mapData.forEach((m) => {
-      // Outside lower bound
-      if (pStart < m.src.start && pEnd < m.src.start) {
-        pairs.push[p];
-      } else if (m.src.start > pStart) {
-      } else {
-      }
-    });
 
-    return pairs;
+    while (remainingPairs.length > 0) {
+      const currentPair = remainingPairs.pop();
+      if (!currentPair) throw new Error("bad pair");
+
+      const [pStart, pEnd] = currentPair;
+
+      let matched = false;
+      for (let i = 0; i < mapData.length; i++) {
+        const m = mapData[i];
+
+        // Outside bounds
+        if (pEnd < m.src.start || pStart > m.src.end) {
+          continue;
+        }
+
+        // Range is contained completely in bounds
+        if (pStart >= m.src.start && pEnd <= m.src.end) {
+          const sOffset = pStart - m.src.start;
+          const eOffset = m.src.end - pEnd;
+
+          const dStart = m.dest.start + sOffset;
+          const dEnd = m.dest.end - eOffset;
+
+          pairs.push([dStart, dEnd]);
+          matched = true;
+          continue;
+
+          // Range overlaps on lower bounds
+        } else if (pStart < m.src.start && pEnd <= m.src.end) {
+          const eOffset = m.src.end - pEnd;
+
+          const dStart = m.dest.start;
+          const dEnd = m.dest.end - eOffset;
+
+          pairs.push([dStart, dEnd]);
+
+          remainingPairs.push([pStart, m.src.start - 1]);
+          matched = true;
+          continue;
+
+          // Range overlaps on upper bounds
+        } else if (pStart >= m.src.start && pEnd > m.src.end) {
+          const sOffset = pStart - m.src.start;
+
+          const dStart = m.dest.start - sOffset;
+          const dEnd = m.dest.end;
+
+          pairs.push([dStart, dEnd]);
+
+          remainingPairs.push([m.src.end + 1, pEnd]);
+          matched = true;
+          continue;
+
+          // Range contains bounds
+        } else if (pStart < m.src.start && pEnd > m.src.end) {
+          pairs.push([m.dest.start, m.dest.end]);
+
+          remainingPairs.push([pStart, m.src.start - 1], [m.src.end + 1, pEnd]);
+          matched = true;
+          continue;
+        } else {
+          throw new Error("shouldn't get here");
+        }
+      }
+
+      if (!matched) {
+        unmatchedPairs.push(currentPair);
+      }
+    }
+
+    return [...pairs, ...unmatchedPairs];
   };
 }
 
