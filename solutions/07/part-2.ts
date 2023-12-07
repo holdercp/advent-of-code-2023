@@ -1,7 +1,9 @@
-import { parseInput } from "./lib";
+import { parseInput, wildHandSorter } from "./lib";
 
 export async function solve() {
-  const input = await parseInput();
+  const hands = await parseInput(true);
 
-  return "Not implemented.";
+  const sortedHands = hands.sort(wildHandSorter);
+
+  return sortedHands.reduce((total, { bid }, i) => total + bid * (i + 1), 0);
 }
