@@ -6,15 +6,15 @@ export async function solve() {
   let node = nodes["AAA"];
   let moves = 0;
   let pos = 0;
-  let terminal = false;
-  while (!terminal) {
+  let done = false;
+  while (!done) {
     const instruction = instructions[pos];
 
     const next = node[instruction];
     moves += 1;
 
     if (next === "ZZZ") {
-      terminal = true;
+      done = true;
     }
 
     pos = (pos + 1) % instructions.length;
