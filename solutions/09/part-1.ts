@@ -1,14 +1,4 @@
-import { parseInput } from "./lib";
-
-function getDifferences(history: number[]) {
-  const diffs = [];
-  for (let i = 0; i < history.length - 1; i++) {
-    const current = history[i];
-    const next = history[i + 1];
-    diffs.push(next - current);
-  }
-  return diffs;
-}
+import { parseInput, getDifferences } from "./lib";
 
 function calcNextValue(history: number[]) {
   const ends = [history[history.length - 1]];
