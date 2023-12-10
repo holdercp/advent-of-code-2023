@@ -99,11 +99,15 @@ function createGraph(s: string, len: number): Graph {
   return g;
 }
 
-export async function parseInput(): Promise<{ graph: Graph; start: string }> {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(): Promise<{
+  graph: Graph;
+  start: string;
+  pipes: string;
+}> {
+  const input = await readInput(import.meta.dir, true);
   const rowLen = input.indexOf("\n");
   const pipes = input.replaceAll("\n", "");
   const start = `${pipes.indexOf("S")}`;
 
-  return { graph: createGraph(pipes, rowLen), start };
+  return { graph: createGraph(pipes, rowLen), start, pipes };
 }
