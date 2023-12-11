@@ -2,50 +2,72 @@ import { readInput } from "../../lib/helpers";
 
 type Universe = string[][];
 
-function expand(s: string): Universe {
-  const expanded: string[][] = [];
-  const lines = s.split("\n").map((l) => l.split(""));
+function buildUniverse(s: string): Universe {
+  return s.split("\n").map((l) => l.split(""));
+}
 
-  lines.forEach((line) => {
-    if (line.every((el) => el === ".")) {
-      expanded.push([...line]);
+function findEmptyRows(u: Universe) {
+  const rows: number[] = [];
+  u.forEach((r, i) => {
+    if (r.every((el) => el === ".")) {
+      rows.push(i);
     }
-    expanded.push([...line]);
   });
 
-  let offset = 0;
-  for (let i = 0; i < lines[0].length; i++) {
-    const col = lines.map((l) => l[i]);
-    if (col.every((el) => el === ".")) {
-      expanded.forEach((l) => {
-        l.splice(i + offset, 0, ".");
-      });
-      offset++;
+  return rows;
+}
+
+function findEmptyCols(u: Universe) {
+  const cols: number[] = [];
+
+  for (let i = 0; i < u[0].length; i++) {
+    const c = u.map((r) => r[i]);
+    if (c.every((el) => el === ".")) {
+      cols.push(i);
     }
   }
 
-  return expanded;
+  return cols;
 }
 
-function findGalaxies(u: Universe) {
+function findGalaxies(
+  u: Universe,
+  emptyCols: number[],
+  emptyRows: number[],
+  expand: number,
+) {
   const g = [];
 
   for (let y = 0; y < u.length; y++) {
     for (let x = 0; x < u[y].length; x++) {
       const el = u[y][x];
       if (el === "#") {
-        g.push([x, y]);
+        const emptyColCount = emptyCols.filter((c) => c < x).length;
+        const emptyRowCount = emptyRows.filter((r) => r < y).length;
+
+        const xOffset = (expand - 1) * emptyColCount;
+        const yOffset = (expand - 1) * emptyRowCount;
+
+        g.push([x + xOffset, y + yOffset]);
       }
     }
   }
   return g;
 }
 
-export async function parseInput() {
+export async function parseInput(part2 = false) {
   const input = await readInput(import.meta.dir);
-  const expanded = expand(input);
+  const universe = buildUniverse(input);
 
-  const galaxies = findGalaxies(expanded);
+  const emptyCols = findEmptyCols(universe);
+  const emptyRows = findEmptyRows(universe);
 
-  return { expanded, galaxies };
+  const galaxies = findGalaxies(
+    universe,
+    emptyCols,
+    emptyRows,
+    part2 ? 1_000_000 : 2,
+  );
+
+  return { galaxies, emptyCols, emptyRows };
 }
