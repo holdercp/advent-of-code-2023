@@ -29,16 +29,31 @@ function getPipeLoop(graph: Graph, start: string): string[] {
 
 function createOutsideFilter(loop: string[], all: string) {
   return (pos: string) => {
-    let intersections = 0;
+    const intersections = [];
     let next = Number(pos) - 1;
-    while (all[next]) {
+    while (next % 20 > 0) {
       if (loop.includes(`${next}`) && all[next] !== "-") {
-        intersections++;
+        intersections.push(all[next]);
       }
 
       next--;
     }
-    return intersections !== 0 && intersections % 2 !== 0;
+
+    let trueIntersections = 0;
+    for (let i = 0; i < intersections.length; i++) {
+      const intersection = intersections[i];
+      if (
+        (intersections[i - 1] === "7" && intersection === "L") ||
+        (intersections[i - 1] === "L" && intersection === "7") ||
+        (intersections[i - 1] === "F" && intersection === "J") ||
+        (intersections[i - 1] === "J" && intersection === "F")
+      ) {
+        continue;
+      } else {
+        trueIntersections++;
+      }
+    }
+    return trueIntersections !== 0 && trueIntersections % 2 !== 0;
   };
 }
 
@@ -54,8 +69,6 @@ export async function solve() {
     .split("")
     .map((_p, i) => `${i}`)
     .filter((_, i) => !loop.includes(`${i}`));
-
-  console.log(loop, nonLoop);
 
   const outside = findOutside(loop, nonLoop, pipes);
 
