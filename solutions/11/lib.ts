@@ -69,5 +69,5 @@ export async function parseInput(part2 = false) {
     part2 ? 1_000_000 : 2,
   );
 
-  return { galaxies, emptyCols, emptyRows };
+  return galaxies;
 }
