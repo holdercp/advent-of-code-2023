@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
 export async function solve() {
-  const input = await parseInput();
+  const records = await parseInput();
 
-  return "Not implemented.";
+  return records;
 }
