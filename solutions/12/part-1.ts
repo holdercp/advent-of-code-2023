@@ -1,22 +1,20 @@
 import { ConditionRecord, parseInput } from "./lib";
 
 function createPattern(n: number) {
-  return [".", ...Array(n).fill("#"), "."].join("");
+  return Array(n).fill("#").join("");
 }
 
 function checkMatch(groups: string[], sizes: number[]) {
-  let groupsStr = groups.join("");
-  return sizes.every((s) => {
-    const pattern = createPattern(s);
-    const matchIndex = groupsStr.indexOf(pattern);
+  const toMatch = groups
+    .join("")
+    .split(".")
+    .filter((g) => g);
 
-    if (matchIndex > -1) {
-      groupsStr = groupsStr.slice(matchIndex + (s + 1));
-      return true;
-    }
+  const pattern = sizes.map(createPattern);
 
-    return false;
-  });
+  if (toMatch.length !== pattern.length) return false;
+
+  return toMatch.every((m, i) => m === pattern[i]);
 }
 
 function createPermutations(groups: string[], wilds: number[]): string[][] {
@@ -26,7 +24,7 @@ function createPermutations(groups: string[], wilds: number[]): string[][] {
 
   const wild = wilds.pop();
 
-  if (wild) {
+  if (wild !== undefined) {
     const copy1 = [...groups];
     const copy2 = [...groups];
 
