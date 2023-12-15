@@ -1,9 +1,12 @@
 import { readInput } from "../../lib/helpers";
 
-type Position = {
+export type Position = {
   x: number;
   y: number;
 };
+
+export type Pipe = "|" | "-" | "F" | "7" | "L" | "J";
+export type Item = Pipe | "." | "#";
 
 function getConnections(g: string[][], pos: Position): Position[] {
   const { x, y } = pos;
@@ -94,7 +97,7 @@ function getConnections(g: string[][], pos: Position): Position[] {
 }
 
 function buildPipeGrid(s: string) {
-  return s.split("\n").map((r) => r.split(""));
+  return s.split("\n").map((r) => r.split("")) as Item[][];
 }
 
 function findStart(g: string[][]): Position | null {
@@ -149,5 +152,5 @@ export async function parseInput() {
   const pipeGrid = buildPipeGrid(input);
   const loop = getPipeLoop(pipeGrid);
 
-  return loop;
+  return { loop, pipeGrid };
 }
