@@ -3,127 +3,128 @@ import { parseInput, Position } from "./lib";
 type Direction = "n" | "s" | "e" | "w";
 type Pipe = "|" | "-" | "F" | "7" | "L" | "J";
 
-function cast(p: Position, dir: Direction, loop: Position[]) {
-  if (dir === "n") {
-    return loop.filter((lp) => lp.y < p.y && lp.x === p.x).length;
-  }
-  if (dir === "s") {
-    return loop.filter((lp) => lp.y > p.y && lp.x === p.x).length;
-  }
-  if (dir === "e") {
-    return loop.filter((lp) => lp.y === p.y && lp.x > p.x).length;
-  }
-  if (dir === "w") {
-    return loop.filter((lp) => lp.y === p.y && lp.x < p.x).length;
-  }
+// function cast(p: Position, dir: Direction, loop: Position[]) {
+//   if (dir === "n") {
+//     return loop.filter((lp) => lp.y < p.y && lp.x === p.x).length;
+//   }
+//   if (dir === "s") {
+//     return loop.filter((lp) => lp.y > p.y && lp.x === p.x).length;
+//   }
+//   if (dir === "e") {
+//     return loop.filter((lp) => lp.y === p.y && lp.x > p.x).length;
+//   }
+//   if (dir === "w") {
+//     return loop.filter((lp) => lp.y === p.y && lp.x < p.x).length;
+//   }
 
-  throw new Error("should not get here");
-}
+//   throw new Error("should not get here");
+// }
 
-function determineStartPipe(loop: Position[]): Pipe {
-  const start = loop[0];
-  const first = loop[1];
-  const last = loop[loop.length - 1];
+// function determineStartPipe(loop: Position[]): Pipe {
+//   const start = loop[0];
+//   const first = loop[1];
+//   const last = loop[loop.length - 1];
 
-  if (
-    (first.y < start.y && last.y > start.y) ||
-    (first.y > start.y && last.y < start.y)
-  )
-    return "|";
+//   if (
+//     (first.y < start.y && last.y > start.y) ||
+//     (first.y > start.y && last.y < start.y)
+//   )
+//     return "|";
 
-  if (
-    (first.x < start.x && last.x > start.x) ||
-    (first.x > start.x && last.x < start.x)
-  ) {
-    return "-";
-  }
+//   if (
+//     (first.x < start.x && last.x > start.x) ||
+//     (first.x > start.x && last.x < start.x)
+//   ) {
+//     return "-";
+//   }
 
-  if (
-    (first.x < start.x && last.y > start.y) ||
-    (last.x < start.x && first.y > start.y)
-  ) {
-    return "7";
-  }
+//   if (
+//     (first.x < start.x && last.y > start.y) ||
+//     (last.x < start.x && first.y > start.y)
+//   ) {
+//     return "7";
+//   }
 
-  if (
-    (first.x > start.x && last.y > start.y) ||
-    (last.x > start.x && first.y > start.y)
-  ) {
-    return "F";
-  }
+//   if (
+//     (first.x > start.x && last.y > start.y) ||
+//     (last.x > start.x && first.y > start.y)
+//   ) {
+//     return "F";
+//   }
 
-  if (
-    (first.x > start.x && last.y < start.y) ||
-    (last.x > start.x && first.y < start.y)
-  ) {
-    return "L";
-  }
+//   if (
+//     (first.x > start.x && last.y < start.y) ||
+//     (last.x > start.x && first.y < start.y)
+//   ) {
+//     return "L";
+//   }
 
-  if (
-    (first.x < start.x && last.y < start.y) ||
-    (last.x < start.x && first.y < start.y)
-  ) {
-    return "J";
-  }
+//   if (
+//     (first.x < start.x && last.y < start.y) ||
+//     (last.x < start.x && first.y < start.y)
+//   ) {
+//     return "J";
+//   }
 
-  throw new Error("shouldn't get here");
-}
+//   throw new Error("shouldn't get here");
+// }
 
-function determineInsideDir(loop: Position[]): Direction {
-  const start = loop[0];
-  const startPipe = determineStartPipe(loop);
+// Broken logic
+// function determineInsideDir(loop: Position[]): Direction {
+//   const start = loop[0];
+//   const startPipe = determineStartPipe(loop);
 
-  if (startPipe === "|") {
-    const westIntersects = cast(start, "w", loop);
-    return westIntersects % 2 === 0 ? "e" : "w";
-  }
-  if (startPipe === "-") {
-    const northIntersects = cast(start, "n", loop);
-    return northIntersects % 2 === 0 ? "s" : "n";
-  }
-  if (startPipe === "7") {
-    const northIntersects = cast(start, "n", loop);
-    const eastIntersects = cast(start, "e", loop);
+//   if (startPipe === "|") {
+//     const westIntersects = cast(start, "w", loop);
+//     return westIntersects % 2 === 0 ? "e" : "w";
+//   }
+//   if (startPipe === "-") {
+//     const northIntersects = cast(start, "n", loop);
+//     return northIntersects % 2 === 0 ? "s" : "n";
+//   }
+//   if (startPipe === "7") {
+//     const northIntersects = cast(start, "n", loop);
+//     const eastIntersects = cast(start, "e", loop);
 
-    if (northIntersects % 2 !== 0) return "n";
-    if (eastIntersects % 2 !== 0) return "e";
+//     if (northIntersects % 2 !== 0) return "n";
+//     if (eastIntersects % 2 !== 0) return "e";
 
-    if (loop[1].y === start.y) return "s";
-    return "w";
-  }
-  if (startPipe === "F") {
-    const northIntersects = cast(start, "n", loop);
-    const westIntersects = cast(start, "w", loop);
+//     if (loop[1].y === start.y) return "s";
+//     return "w";
+//   }
+//   if (startPipe === "F") {
+//     const northIntersects = cast(start, "n", loop);
+//     const westIntersects = cast(start, "w", loop);
 
-    if (northIntersects % 2 !== 0) return "n";
-    if (westIntersects % 2 !== 0) return "w";
+//     if (northIntersects % 2 !== 0) return "n";
+//     if (westIntersects % 2 !== 0) return "w";
 
-    if (loop[1].y === start.y) return "s";
-    return "e";
-  }
-  if (startPipe === "J") {
-    const southIntersects = cast(start, "s", loop);
-    const eastIntersects = cast(start, "e", loop);
+//     if (loop[1].y === start.y) return "s";
+//     return "e";
+//   }
+//   if (startPipe === "J") {
+//     const southIntersects = cast(start, "s", loop);
+//     const eastIntersects = cast(start, "e", loop);
 
-    if (southIntersects % 2 !== 0) return "s";
-    if (eastIntersects % 2 !== 0) return "e";
+//     if (southIntersects % 2 !== 0) return "s";
+//     if (eastIntersects % 2 !== 0) return "e";
 
-    if (loop[1].y === start.y) return "n";
-    return "w";
-  }
-  if (startPipe === "L") {
-    const southIntersects = cast(start, "s", loop);
-    const westIntersects = cast(start, "w", loop);
+//     if (loop[1].y === start.y) return "n";
+//     return "w";
+//   }
+//   if (startPipe === "L") {
+//     const southIntersects = cast(start, "s", loop);
+//     const westIntersects = cast(start, "w", loop);
 
-    if (southIntersects % 2 !== 0) return "s";
-    if (westIntersects % 2 !== 0) return "w";
+//     if (southIntersects % 2 !== 0) return "s";
+//     if (westIntersects % 2 !== 0) return "w";
 
-    if (loop[1].y === start.y) return "n";
-    return "e";
-  }
+//     if (loop[1].y === start.y) return "n";
+//     return "e";
+//   }
 
-  throw new Error("shouldn't get here");
-}
+//   throw new Error("shouldn't get here");
+// }
 
 function findNonLoopElements(
   p: Position,
@@ -247,9 +248,9 @@ function calcInsideCount(loop: Position[], grid: string[][], dir: Direction) {
 
 export async function solve() {
   const { loop, pipeGrid } = await parseInput();
-  const dir = determineInsideDir(loop);
+  // const dir = determineInsideDir(loop);
 
-  const insideCount = calcInsideCount(loop, pipeGrid, dir);
+  const insideCount = calcInsideCount(loop, pipeGrid, "w");
 
   const total = new Set();
   for (let y = 0; y < pipeGrid.length; y++) {
@@ -260,8 +261,6 @@ export async function solve() {
       total.add(`${x}:${y}`);
     }
   }
-
-  console.log(total.size, insideCount);
 
   return insideCount;
 }
