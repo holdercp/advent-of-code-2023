@@ -116,6 +116,7 @@ function findStart(g: string[][]): Position | null {
 
 function getPipeLoop(g: string[][]) {
   const startPos = findStart(g);
+
   if (!startPos) {
     throw new Error("Start position not found");
   }
@@ -132,8 +133,8 @@ function getPipeLoop(g: string[][]) {
     } else if (
       // Check if we've completed the loop
       loop.length > 2 &&
-      (c1.x === startPos.x || c2.x === startPos.x) &&
-      (c1.y === startPos.y || c2.y === startPos.y)
+      ((c1.x === startPos.x && c1.y === startPos.y) ||
+        (c2.x === startPos.x && c2.y === startPos.y))
     ) {
       break;
     } else if (c1.x === prevPos.x && c1.y === prevPos.y) {

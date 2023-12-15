@@ -149,7 +149,7 @@ function findNonLoopElements(
       nonLoopPos.push({ x, y: p.y });
     }
   } else if (dir === "w") {
-    for (let x = p.x - 1; x > 0; x--) {
+    for (let x = p.x - 1; x >= 0; x--) {
       if (loop.find((lp) => lp.y === p.y && lp.x === x)) break;
       nonLoopPos.push({ x, y: p.y });
     }
