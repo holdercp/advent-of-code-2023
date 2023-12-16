@@ -252,15 +252,5 @@ export async function solve() {
 
   const insideCount = calcInsideCount(loop, pipeGrid, "w");
 
-  const total = new Set();
-  for (let y = 0; y < pipeGrid.length; y++) {
-    for (let x = 0; x < pipeGrid[0].length; x++) {
-      if (loop.find((lp) => lp.y === y && lp.x === x)) {
-        continue;
-      }
-      total.add(`${x}:${y}`);
-    }
-  }
-
   return insideCount;
 }
