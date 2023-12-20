@@ -1,20 +1,17 @@
 import { ConditionRecord, parseInput } from "./lib";
 
-function createPattern(n: number) {
-  return Array(n).fill("#").join("");
+function checkMatch(counts: number[], sizes: number[]) {
+  if (counts.length !== sizes.length) return false;
+
+  return counts.every((c, i) => c === sizes[i]);
 }
 
-function checkMatch(groups: string[], sizes: number[]) {
-  const toMatch = groups
+function reduceGroupsToCounts(groups: string[]) {
+  return groups
     .join("")
     .split(".")
-    .filter((g) => g);
-
-  const pattern = sizes.map(createPattern);
-
-  if (toMatch.length !== pattern.length) return false;
-
-  return toMatch.every((m, i) => m === pattern[i]);
+    .filter((g) => g)
+    .map((springs) => springs.length);
 }
 
 function createPermutations(groups: string[], wilds: number[]): string[][] {
@@ -49,10 +46,12 @@ function getPermutationCount(record: ConditionRecord) {
     }
   });
 
-  const perms = createPermutations(groups, wilds);
+  const springGroupCounts = createPermutations(groups, wilds).map((groups) =>
+    reduceGroupsToCounts(groups),
+  );
 
-  return perms.reduce((sum, p) => {
-    if (checkMatch(p, sizes)) {
+  return springGroupCounts.reduce((sum, counts) => {
+    if (checkMatch(counts, sizes)) {
       return sum + 1;
     }
 
@@ -60,8 +59,18 @@ function getPermutationCount(record: ConditionRecord) {
   }, 0);
 }
 
+function groupWithoutOperational(record: ConditionRecord) {
+  const listWithoutOp = record.list.split(".").filter((g) => g);
+  return {
+    list: listWithoutOp,
+    sizes: [...record.sizes],
+  };
+}
+
 export async function solve() {
   const records = await parseInput();
+
+  const withoutOperational = records.map(groupWithoutOperational);
 
   return records.reduce((sum, record) => {
     const perms = getPermutationCount(record);

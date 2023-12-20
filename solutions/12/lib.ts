@@ -1,16 +1,16 @@
 import { readInput } from "../../lib/helpers";
 
 export type ConditionRecord = {
-  groups: string[];
+  list: string;
   sizes: number[];
 };
 
 export async function parseInput() {
-  const lines = (await readInput(import.meta.dir)).split("\n");
-  const records = lines.map((line) => {
+  const lines = (await readInput(import.meta.dir, true)).split("\n");
+  const records: ConditionRecord[] = lines.map((line) => {
     const [groups, sizes] = line.split(" ");
     return {
-      groups: groups.split(""),
+      list: groups,
       sizes: sizes.split(",").map(Number),
     };
   });
