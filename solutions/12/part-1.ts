@@ -6,24 +6,24 @@ function checkMatch(counts: number[], sizes: number[]) {
   return counts.every((c, i) => c === sizes[i]);
 }
 
-function reduceGroupsToCounts(groups: string[]) {
-  return groups
+function reduceSegmentsToCounts(segments: string[]) {
+  return segments
     .join("")
     .split(".")
     .filter((g) => g)
     .map((springs) => springs.length);
 }
 
-function createPermutations(groups: string[], wilds: number[]): string[][] {
+function createPermutations(segments: string[], wilds: number[]): string[][] {
   if (wilds.length === 0) {
-    return [groups];
+    return [segments];
   }
 
   const wild = wilds.pop();
 
   if (wild !== undefined) {
-    const copy1 = [...groups];
-    const copy2 = [...groups];
+    const copy1 = [...segments];
+    const copy2 = [...segments];
 
     copy1[wild] = "#";
     copy2[wild] = ".";
@@ -37,17 +37,17 @@ function createPermutations(groups: string[], wilds: number[]): string[][] {
   throw new Error("shouldn't get here");
 }
 
-function getPermutationCount(record: ConditionRecord) {
-  const { groups, sizes } = record;
+function getArrangementCount(record: ConditionRecord) {
+  const { list, sizes } = record;
   const wilds: number[] = [];
-  groups.forEach((symbol, i) => {
+  list.forEach((symbol, i) => {
     if (symbol === "?") {
       wilds.push(i);
     }
   });
 
-  const springGroupCounts = createPermutations(groups, wilds).map((groups) =>
-    reduceGroupsToCounts(groups),
+  const springGroupCounts = createPermutations(list, wilds).map((segments) =>
+    reduceSegmentsToCounts(segments),
   );
 
   return springGroupCounts.reduce((sum, counts) => {
@@ -59,21 +59,11 @@ function getPermutationCount(record: ConditionRecord) {
   }, 0);
 }
 
-function groupWithoutOperational(record: ConditionRecord) {
-  const listWithoutOp = record.list.split(".").filter((g) => g);
-  return {
-    list: listWithoutOp,
-    sizes: [...record.sizes],
-  };
-}
-
 export async function solve() {
   const records = await parseInput();
 
-  const withoutOperational = records.map(groupWithoutOperational);
-
   return records.reduce((sum, record) => {
-    const perms = getPermutationCount(record);
+    const perms = getArrangementCount(record);
     return sum + perms;
   }, 0);
 }
