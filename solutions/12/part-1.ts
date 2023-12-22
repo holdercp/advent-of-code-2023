@@ -1,4 +1,4 @@
-import { ConditionRecord, parseInput } from "./lib";
+import { ConditionRecord, createPermutations, parseInput } from "./lib";
 
 function checkMatch(counts: number[], sizes: number[]) {
   if (counts.length !== sizes.length) return false;
@@ -12,29 +12,6 @@ function reduceSegmentsToCounts(segments: string[]) {
     .split(".")
     .filter((g) => g)
     .map((springs) => springs.length);
-}
-
-function createPermutations(segments: string[], wilds: number[]): string[][] {
-  if (wilds.length === 0) {
-    return [segments];
-  }
-
-  const wild = wilds.pop();
-
-  if (wild !== undefined) {
-    const copy1 = [...segments];
-    const copy2 = [...segments];
-
-    copy1[wild] = "#";
-    copy2[wild] = ".";
-
-    return [
-      ...createPermutations(copy1, [...wilds]),
-      ...createPermutations(copy2, [...wilds]),
-    ];
-  }
-
-  throw new Error("shouldn't get here");
 }
 
 function getArrangementCount(record: ConditionRecord) {
