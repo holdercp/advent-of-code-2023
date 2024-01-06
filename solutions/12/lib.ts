@@ -32,7 +32,7 @@ export function createPermutations(
 }
 
 export async function parseInput() {
-  const lines = (await readInput(import.meta.dir, true)).split("\n");
+  const lines = (await readInput(import.meta.dir)).split("\n");
   const records: ConditionRecord[] = lines.map((line) => {
     const [list, sizes] = line.split(" ");
     return {
