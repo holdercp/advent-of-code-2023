@@ -73,7 +73,6 @@ function getGroupArrangements(group: string) {
         .filter((g) => g)
         .map((g) => g.length),
     )
-    .filter((p) => p.length > 0)
     .map((a) => a.join())
     .reduce((aMap, a) => {
       const count = aMap.has(a) ? aMap.get(a)! + 1 : 1;
@@ -113,6 +112,8 @@ function getArrangementCount(
 ): number {
   if (groupArrangements.length === 0 && sizes.length === 0) {
     return 1;
+  } else if (sizes.length === 0 && groupArrangements.every((a) => a.has(""))) {
+    return 1;
   } else if (sizes.length === 0 || groupArrangements.length === 0) {
     return 0;
   }
@@ -121,8 +122,8 @@ function getArrangementCount(
 
   const arrangement = _groupArrangements.shift()!;
   const serializedSizes = serializeSizes(sizes, maxGroupSize);
-  const matchedSizes = [...arrangement.keys()].filter((a) =>
-    serializedSizes.includes(a),
+  const matchedSizes = [...arrangement.keys()].filter(
+    (a) => serializedSizes.includes(a) || a === "",
   );
 
   if (matchedSizes.length === 0) {
@@ -130,7 +131,8 @@ function getArrangementCount(
   }
 
   return matchedSizes.reduce((sum, size) => {
-    const remainingSizes = sizes.slice(size.replaceAll(",", "").length);
+    const sliceIndex = [...size.matchAll(/,/g)].length + 1;
+    const remainingSizes = size === "" ? [...sizes] : sizes.slice(sliceIndex);
 
     return (
       sum +
@@ -152,13 +154,12 @@ export async function solve() {
 
     const groupArrangements = reducedRecord.groups.map(getGroupArrangements);
 
-    return (
-      sum +
-      getArrangementCount(
-        reducedRecord.sizes,
-        groupArrangements,
-        getMaxGroupSize(groupArrangements[0]),
-      )
+    const count = getArrangementCount(
+      reducedRecord.sizes,
+      groupArrangements,
+      getMaxGroupSize(groupArrangements[0]),
     );
+
+    return sum + count;
   }, 0);
 }
