@@ -31,10 +31,16 @@ export function createPermutations(
   throw new Error("shouldn't get here");
 }
 
-export async function parseInput() {
-  const lines = (await readInput(import.meta.dir)).split("\n");
+function unfold(line: string): [string, string] {
+  const [list, sizes] = line.split(" ");
+  return [new Array(5).fill(list).join("?"), new Array(5).fill(sizes).join()];
+}
+
+export async function parseInput(part2 = false) {
+  const lines = (await readInput(import.meta.dir, true)).split("\n");
   const records: ConditionRecord[] = lines.map((line) => {
-    const [list, sizes] = line.split(" ");
+    const [list, sizes] = part2 ? unfold(line) : line.split(" ");
+
     return {
       list: list.split(""),
       sizes: sizes.split(",").map(Number),

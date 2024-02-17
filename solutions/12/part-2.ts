@@ -147,7 +147,7 @@ function getArrangementCount(
 }
 
 export async function solve() {
-  const records = await parseInput();
+  const records = await parseInput(true);
 
   return records.reduce((sum, record) => {
     const reducedRecord = reduceRecord(record);
