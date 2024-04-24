@@ -63,8 +63,8 @@ function countValidArrangements(
   const firstSpring = list[0] as Condition;
   const listWithoutFirstSpring = list.slice(1);
 
-  // TODO: Handle edge cases around when list and sizes are empty
-  if (firstSpring === undefined) return 0;
+  if (firstSpring === undefined && sizesCopy.length === 0) return 1;
+  if (firstSpring === undefined && sizesCopy.length > 0) return 0;
 
   if (firstSpring === Condition.UNKNOWN) {
     return sumArrangementBranches(listWithoutFirstSpring, sizesCopy);
