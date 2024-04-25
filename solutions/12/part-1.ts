@@ -52,7 +52,7 @@ function countDamagedSpringsAndMatchWithSizes(
     damagedCount++;
   }
 
-  return damagedCount === targetSize ? 1 : 0;
+  return damagedCount === targetSize && remainingSizes.length === 0 ? 1 : 0;
 }
 
 function countValidArrangements(
@@ -78,9 +78,7 @@ function countValidArrangements(
     return countDamagedSpringsAndMatchWithSizes(list, sizesCopy);
   }
 
-  throw new Error(
-    `The plucked spring was ${firstSpring}, which is not a valid Condition.`,
-  );
+  throw new Error(`An invalid spring condition was given: ${firstSpring}`);
 }
 
 function sumArrangementsReducer(sum: number, record: ConditionRecord): number {
