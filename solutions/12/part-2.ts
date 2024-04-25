@@ -1,165 +1,115 @@
-/* eslint-disable no-constant-condition */
-import { ConditionRecord, createPermutations, parseInput } from "./lib";
+import { Condition, ConditionRecord, parseInput } from "./lib";
 
-const arrangementCache = new Map<string, Map<string, number>>();
+let cache: Record<string, number> = {};
 
-function reduceRecord(record: ConditionRecord) {
-  const listGroups = record.list
-    .join("")
-    .split(".")
-    .filter((g) => g);
-
-  const reducedList = [...listGroups];
-  const reducedSizes = [...record.sizes];
-
-  // Remove matches from list and sizes
-  // Start from end
-  while (true) {
-    const size = reducedSizes[reducedSizes.length - 1];
-    const group = reducedList[reducedList.length - 1];
-
-    if (
-      size === group.length &&
-      group.split("").every((spring) => spring === "#")
-    ) {
-      reducedList.pop();
-      reducedSizes.pop();
-    } else {
-      break;
-    }
-  }
-
-  // Remove matches from list and sizes
-  // Start from beginning
-  while (true) {
-    const size = reducedSizes[0];
-    const group = reducedList[0];
-
-    if (
-      size === group.length &&
-      group.split("").every((spring) => spring === "#")
-    ) {
-      reducedList.shift();
-      reducedSizes.shift();
-    } else {
-      break;
-    }
-  }
-
-  return {
-    groups: reducedList,
-    sizes: reducedSizes,
-  };
-}
-
-function getGroupArrangements(group: string) {
-  if (arrangementCache.has(group)) {
-    return arrangementCache.get(group)!;
-  }
-
-  const wilds: number[] = [];
-  const groupArr = group.split("");
-  groupArr.forEach((symbol, i) => {
-    if (symbol === "?") {
-      wilds.push(i);
-    }
-  });
-
-  const groupArrangements = createPermutations(groupArr, wilds)
-    .map((perm) =>
-      perm
-        .join("")
-        .split(".")
-        .filter((g) => g)
-        .map((g) => g.length),
-    )
-    .map((a) => a.join())
-    .reduce((aMap, a) => {
-      const count = aMap.has(a) ? aMap.get(a)! + 1 : 1;
-      aMap.set(a, count);
-      return aMap;
-    }, new Map<string, number>());
-
-  arrangementCache.set(group, groupArrangements);
-
-  return groupArrangements;
-}
-
-function serializeSizes(sizes: number[], maxGroupSize: number) {
-  const serialized = [];
-  for (let i = 0; i < maxGroupSize; i++) {
-    const s = sizes.slice(0, i + 1);
-    serialized.push(s.join());
-  }
-  return serialized;
-}
-
-function getMaxGroupSize(groupArrangement: Map<string, number>) {
-  if (!groupArrangement || groupArrangement.size === 0) {
-    return 0;
-  }
-  const lengths = [...groupArrangement.keys()].map(
-    (a) => a.replaceAll(",", "").length,
-  );
-
-  return Math.max(...lengths);
-}
-
-function getArrangementCount(
-  sizes: number[],
-  groupArrangements: Map<string, number>[],
-  maxGroupSize: number,
+function sumArrangementBranches(
+  list: ConditionRecord["list"],
+  sizes: ConditionRecord["sizes"],
 ): number {
-  if (groupArrangements.length === 0 && sizes.length === 0) {
-    return 1;
-  } else if (sizes.length === 0 && groupArrangements.every((a) => a.has(""))) {
-    return 1;
-  } else if (sizes.length === 0 || groupArrangements.length === 0) {
-    return 0;
-  }
-
-  const _groupArrangements = [...groupArrangements];
-
-  const arrangement = _groupArrangements.shift()!;
-  const serializedSizes = serializeSizes(sizes, maxGroupSize);
-  const matchedSizes = [...arrangement.keys()].filter(
-    (a) => serializedSizes.includes(a) || a === "",
+  return (
+    countValidArrangements(`#${list}`, sizes) +
+    countValidArrangements(list, sizes)
   );
+}
 
-  if (matchedSizes.length === 0) {
-    return 0;
+function countDamagedSpringsAndMatchWithSizes(
+  list: ConditionRecord["list"],
+  sizes: ConditionRecord["sizes"],
+): number {
+  const [targetSize, ...remainingSizes] = sizes;
+  let damagedCount = 0;
+
+  for (let i = 0; i < list.length; i++) {
+    const spring = list[i] as Condition;
+
+    if (spring === Condition.UNKNOWN) {
+      if (damagedCount === targetSize) {
+        // Continue counting arrangements with a contiguous damaged section accounted for
+        const remainingList = list.slice(i + 1);
+        return countValidArrangements(remainingList, remainingSizes);
+      }
+
+      if (damagedCount < targetSize) {
+        // Consider the UNKNOWN as DAMAGED and continue building the contiguous damaged section
+        damagedCount++;
+        continue;
+      }
+
+      // Damaged count is greater than the target size, meaning this branch isn't valid
+      return 0;
+    }
+
+    if (spring === Condition.OPERATIONAL) {
+      if (damagedCount === targetSize) {
+        // We've matched a contiguous damaged section so reset and match against the next size
+        const remainingList = list.slice(i + 1);
+        return countValidArrangements(remainingList, remainingSizes);
+      } else {
+        // We've broken the contiguous damaged section, so if it doesn't match the target size this branch isn't valid
+        return 0;
+      }
+    }
+
+    // Spring is damaged; keep building contiguous section
+    damagedCount++;
   }
 
-  return matchedSizes.reduce((sum, size) => {
-    const sliceIndex = [...size.matchAll(/,/g)].length + 1;
-    const remainingSizes = size === "" ? [...sizes] : sizes.slice(sliceIndex);
+  return damagedCount === targetSize && remainingSizes.length === 0 ? 1 : 0;
+}
 
-    return (
-      sum +
-      getArrangementCount(
-        remainingSizes,
-        _groupArrangements,
-        getMaxGroupSize(_groupArrangements[0]),
-      ) *
-        arrangement.get(size)!
-    );
-  }, 0);
+function countValidArrangements(
+  list: ConditionRecord["list"],
+  sizes: ConditionRecord["sizes"],
+): number {
+  const cacheId = `${list}:${sizes.join()}`;
+  if (cache[cacheId]) {
+    return cache[cacheId];
+  }
+
+  const sizesCopy = [...sizes];
+  const firstSpring = list[0] as Condition;
+  const listWithoutFirstSpring = list.slice(1);
+
+  let count = 0;
+
+  if (firstSpring === undefined && sizesCopy.length === 0) count += 1;
+  if (firstSpring === undefined && sizesCopy.length > 0) count += 0;
+
+  if (firstSpring === Condition.UNKNOWN) {
+    count += sumArrangementBranches(listWithoutFirstSpring, sizesCopy);
+  }
+
+  if (firstSpring === Condition.OPERATIONAL) {
+    count += countValidArrangements(listWithoutFirstSpring, sizesCopy);
+  }
+
+  if (firstSpring === Condition.DAMAGED) {
+    count += countDamagedSpringsAndMatchWithSizes(list, sizesCopy);
+  }
+
+  cache[cacheId] = count;
+
+  return count;
+}
+
+function sumArrangementsReducer(
+  sum: number,
+  record: ConditionRecord,
+  index: number,
+): number {
+  console.log(index);
+
+  cache = {};
+  const counts = countValidArrangements(record.list, record.sizes);
+  return sum + counts;
+}
+
+function sumArrangementCounts(records: ConditionRecord[]): number {
+  return records.reduce(sumArrangementsReducer, 0);
 }
 
 export async function solve() {
-  const records = await parseInput(true);
+  const records = await parseInput("part2");
 
-  return records.reduce((sum, record) => {
-    const reducedRecord = reduceRecord(record);
-
-    const groupArrangements = reducedRecord.groups.map(getGroupArrangements);
-
-    const count = getArrangementCount(
-      reducedRecord.sizes,
-      groupArrangements,
-      getMaxGroupSize(groupArrangements[0]),
-    );
-
-    return sum + count;
-  }, 0);
+  return sumArrangementCounts(records);
 }

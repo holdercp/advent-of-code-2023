@@ -17,7 +17,7 @@ function unfold(line: string): [string, string] {
 }
 
 export async function parseInput(part: "part1" | "part2" = "part1") {
-  const lines = (await readInput(import.meta.dir, "example")).split("\n");
+  const lines = (await readInput(import.meta.dir)).split("\n");
   const records: ConditionRecord[] = lines.map((line) => {
     const [list, sizes] = part === "part2" ? unfold(line) : line.split(" ");
 
