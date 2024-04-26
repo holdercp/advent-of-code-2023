@@ -1,11 +1,11 @@
 import { readInput } from "../../lib/helpers";
 
 export type ConditionRecord = {
-  list: string;
-  sizes: number[];
+  springs: Spring[];
+  damages: number[];
 };
 
-export enum Condition {
+export enum Spring {
   OPERATIONAL = ".",
   DAMAGED = "#",
   UNKNOWN = "?",
@@ -19,11 +19,12 @@ function unfold(line: string): [string, string] {
 export async function parseInput(part: "part1" | "part2" = "part1") {
   const lines = (await readInput(import.meta.dir)).split("\n");
   const records: ConditionRecord[] = lines.map((line) => {
-    const [list, sizes] = part === "part2" ? unfold(line) : line.split(" ");
+    const [springs, damages] =
+      part === "part2" ? unfold(line) : line.split(" ");
 
     return {
-      list,
-      sizes: sizes.split(",").map(Number),
+      springs: springs.split("") as Spring[],
+      damages: damages.split(",").map(Number),
     };
   });
 

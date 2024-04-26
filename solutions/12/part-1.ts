@@ -1,88 +1,81 @@
-import { Condition, ConditionRecord, parseInput } from "./lib";
+import { Spring, ConditionRecord, parseInput } from "./lib";
 
-function sumArrangementBranches(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
-): number {
-  return (
-    countValidArrangements(`#${list}`, sizes) +
-    countValidArrangements(list, sizes)
+function trimOperationalSprings(
+  springs: ConditionRecord["springs"],
+): ConditionRecord["springs"] {
+  const firstNonOperational = springs.findIndex(
+    (s) => s === Spring.DAMAGED || s === Spring.UNKNOWN,
   );
-}
-
-function countDamagedSpringsAndMatchWithSizes(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
-): number {
-  const [targetSize, ...remainingSizes] = sizes;
-  let damagedCount = 0;
-
-  for (let i = 0; i < list.length; i++) {
-    const spring = list[i] as Condition;
-
-    if (spring === Condition.UNKNOWN) {
-      if (damagedCount === targetSize) {
-        // Continue counting arrangements with a contiguous damaged section accounted for
-        const remainingList = list.slice(i + 1);
-        return countValidArrangements(remainingList, remainingSizes);
-      }
-
-      if (damagedCount < targetSize) {
-        // Consider the UNKNOWN as DAMAGED and continue building the contiguous damaged section
-        damagedCount++;
-        continue;
-      }
-
-      // Damaged count is greater than the target size, meaning this branch isn't valid
-      return 0;
-    }
-
-    if (spring === Condition.OPERATIONAL) {
-      if (damagedCount === targetSize) {
-        // We've matched a contiguous damaged section so reset and match against the next size
-        const remainingList = list.slice(i + 1);
-        return countValidArrangements(remainingList, remainingSizes);
-      } else {
-        // We've broken the contiguous damaged section, so if it doesn't match the target size this branch isn't valid
-        return 0;
-      }
-    }
-
-    // Spring is damaged; keep building contiguous section
-    damagedCount++;
-  }
-
-  return damagedCount === targetSize && remainingSizes.length === 0 ? 1 : 0;
+  return springs.slice(firstNonOperational);
 }
 
 function countValidArrangements(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
+  springs: ConditionRecord["springs"],
+  damages: ConditionRecord["damages"],
 ): number {
-  const sizesCopy = [...sizes];
-  const firstSpring = list[0] as Condition;
-  const listWithoutFirstSpring = list.slice(1);
+  // If we're out of springs then either we've distributed all damage and we've found a
+  // valid arrangement, or we have damage left and it's invalid
+  if (springs.length === 0) return damages.length === 0 ? 1 : 0;
 
-  if (firstSpring === undefined && sizesCopy.length === 0) return 1;
-  if (firstSpring === undefined && sizesCopy.length > 0) return 0;
+  const [firstSpring, ...remainingSprings] = springs;
 
-  if (firstSpring === Condition.UNKNOWN) {
-    return sumArrangementBranches(listWithoutFirstSpring, sizesCopy);
+  if (firstSpring === Spring.OPERATIONAL) {
+    // Remove all the operational springs from the beginning and recurse to solve this branch
+    return countValidArrangements(
+      trimOperationalSprings(remainingSprings),
+      damages,
+    );
   }
 
-  if (firstSpring === Condition.OPERATIONAL) {
-    return countValidArrangements(listWithoutFirstSpring, sizesCopy);
+  if (firstSpring === Spring.UNKNOWN) {
+    // Create two branches:
+    // one where the unknown is damage
+    // and one where it's operational (which we just remove)
+    return (
+      countValidArrangements([Spring.DAMAGED, ...remainingSprings], damages) +
+      countValidArrangements(remainingSprings, damages)
+    );
   }
 
-  if (firstSpring === Condition.DAMAGED) {
-    return countDamagedSpringsAndMatchWithSizes(list, sizesCopy);
+  if (firstSpring === Spring.DAMAGED) {
+    // If we've distributed all the damage, yet the first spring is damage, we've overshot and it's invalid
+    if (damages.length === 0) return 0;
+
+    const [targetDamage, ...remainingDamage] = damages;
+    // If there are not enough spring "slots" to hold the first damage group
+    // or there would be operational springs in that group, it's invalid
+    if (
+      targetDamage > springs.length ||
+      springs.slice(0, targetDamage).includes(Spring.OPERATIONAL)
+    ) {
+      return 0;
+    }
+
+    // If the damage we're trying to distribute is equal to the rest of the spring slots,
+    // and there's no more damage to distribute, we have a valid arrangement,
+    // otherwise we don't have enough slots to fit the remaining damage so it's invalid
+    if (targetDamage === springs.length) {
+      return remainingDamage.length === 0 ? 1 : 0;
+    }
+
+    // At this point, if the slot just beyond the slots we're using to distribute the current damage
+    // is also damaged, we know this target damage doesn't match so it's invalid
+    if (springs[targetDamage] === "#") {
+      return 0;
+    }
+
+    // If we get here, it means the damage will fit and the spot just beyond the damage slots can be treated as operational.
+    return countValidArrangements(
+      springs.slice(targetDamage + 1),
+      remainingDamage,
+    );
   }
 
   throw new Error(`An invalid spring condition was given: ${firstSpring}`);
 }
 
 function sumArrangementsReducer(sum: number, record: ConditionRecord): number {
-  const counts = countValidArrangements(record.list, record.sizes);
+  const counts = countValidArrangements(record.springs, record.damages);
   return sum + counts;
 }
 
