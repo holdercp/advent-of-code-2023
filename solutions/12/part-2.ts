@@ -1,106 +1,84 @@
-import { Condition, ConditionRecord, parseInput } from "./lib";
+import { Spring, ConditionRecord, parseInput } from "./lib";
 
-let cache: Record<string, number> = {};
-
-function sumArrangementBranches(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
-): number {
-  return (
-    countValidArrangements(`#${list}`, sizes) +
-    countValidArrangements(list, sizes)
+function trimOperationalSprings(
+  springs: ConditionRecord["springs"],
+): ConditionRecord["springs"] {
+  const firstNonOperational = springs.findIndex(
+    (s) => s === Spring.DAMAGED || s === Spring.UNKNOWN,
   );
+  return springs.slice(firstNonOperational);
 }
 
-function countDamagedSpringsAndMatchWithSizes(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
-): number {
-  const [targetSize, ...remainingSizes] = sizes;
-  let damagedCount = 0;
-
-  for (let i = 0; i < list.length; i++) {
-    const spring = list[i] as Condition;
-
-    if (spring === Condition.UNKNOWN) {
-      if (damagedCount === targetSize) {
-        // Continue counting arrangements with a contiguous damaged section accounted for
-        const remainingList = list.slice(i + 1);
-        return countValidArrangements(remainingList, remainingSizes);
-      }
-
-      if (damagedCount < targetSize) {
-        // Consider the UNKNOWN as DAMAGED and continue building the contiguous damaged section
-        damagedCount++;
-        continue;
-      }
-
-      // Damaged count is greater than the target size, meaning this branch isn't valid
-      return 0;
-    }
-
-    if (spring === Condition.OPERATIONAL) {
-      if (damagedCount === targetSize) {
-        // We've matched a contiguous damaged section so reset and match against the next size
-        const remainingList = list.slice(i + 1);
-        return countValidArrangements(remainingList, remainingSizes);
-      } else {
-        // We've broken the contiguous damaged section, so if it doesn't match the target size this branch isn't valid
-        return 0;
-      }
-    }
-
-    // Spring is damaged; keep building contiguous section
-    damagedCount++;
-  }
-
-  return damagedCount === targetSize && remainingSizes.length === 0 ? 1 : 0;
+function createCacheKey(
+  spring: ConditionRecord["springs"],
+  damages: ConditionRecord["damages"],
+): string {
+  return `${spring.join()}:${damages.join()}`;
 }
 
 function countValidArrangements(
-  list: ConditionRecord["list"],
-  sizes: ConditionRecord["sizes"],
+  springs: ConditionRecord["springs"],
+  damages: ConditionRecord["damages"],
+  cache: Map<string, number>,
 ): number {
-  const cacheId = `${list}:${sizes.join()}`;
-  if (cache[cacheId]) {
-    return cache[cacheId];
-  }
+  const cacheKey = createCacheKey(springs, damages);
+  const cacheResult = cache.get(cacheKey);
+  if (cacheResult !== undefined) return cacheResult;
 
-  const sizesCopy = [...sizes];
-  const firstSpring = list[0] as Condition;
-  const listWithoutFirstSpring = list.slice(1);
+  // If we're out of springs then either we've distributed all damage and we've found a
+  // valid arrangement, or we have damage left and it's invalid
+  if (springs.length === 0) return damages.length === 0 ? 1 : 0;
 
+  const [firstSpring, ...remainingSprings] = springs;
   let count = 0;
 
-  if (firstSpring === undefined && sizesCopy.length === 0) count += 1;
-  if (firstSpring === undefined && sizesCopy.length > 0) count += 0;
-
-  if (firstSpring === Condition.UNKNOWN) {
-    count += sumArrangementBranches(listWithoutFirstSpring, sizesCopy);
+  if (firstSpring === Spring.OPERATIONAL) {
+    // Remove all the operational springs from the beginning and recurse to solve this branch
+    count += countValidArrangements(
+      trimOperationalSprings(remainingSprings),
+      damages,
+      cache,
+    );
+  } else if (firstSpring === Spring.UNKNOWN) {
+    // Create two branches:
+    // one where the unknown is damage
+    // and one where it's operational (which we just remove)
+    count +=
+      countValidArrangements(
+        [Spring.DAMAGED, ...remainingSprings],
+        damages,
+        cache,
+      ) + countValidArrangements(remainingSprings, damages, cache);
+  } else if (firstSpring === Spring.DAMAGED) {
+    if (damages.length > 0) {
+      const [damage, ...remainingDamage] = damages;
+      if (
+        damage <= springs.length &&
+        !springs.slice(0, damage).includes(Spring.OPERATIONAL)
+      ) {
+        if (damage === springs.length && remainingDamage.length === 0) {
+          count += 1;
+        } else if (springs[damage] !== "#") {
+          count += countValidArrangements(
+            springs.slice(damage + 1),
+            remainingDamage,
+            cache,
+          );
+        }
+      }
+    }
   }
 
-  if (firstSpring === Condition.OPERATIONAL) {
-    count += countValidArrangements(listWithoutFirstSpring, sizesCopy);
-  }
-
-  if (firstSpring === Condition.DAMAGED) {
-    count += countDamagedSpringsAndMatchWithSizes(list, sizesCopy);
-  }
-
-  cache[cacheId] = count;
-
+  cache.set(cacheKey, count);
   return count;
 }
 
-function sumArrangementsReducer(
-  sum: number,
-  record: ConditionRecord,
-  index: number,
-): number {
-  console.log(index);
-
-  cache = {};
-  const counts = countValidArrangements(record.list, record.sizes);
+function sumArrangementsReducer(sum: number, record: ConditionRecord): number {
+  const counts = countValidArrangements(
+    record.springs,
+    record.damages,
+    new Map(),
+  );
   return sum + counts;
 }
 
