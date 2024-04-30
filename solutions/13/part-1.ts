@@ -7,6 +7,30 @@ type Reflection = {
 
 type RelfectionIndexes = Record<string, number>;
 
+function isReflected(line: string) {
+  let j = line.length - 1;
+  for (let i = 0; i < Math.floor(line.length / 2); i++) {
+    const start = line[i];
+    const end = line[j];
+
+    if (start !== end) {
+      return false;
+    }
+
+    j--;
+  }
+
+  return true;
+}
+
+function calcMidpointForUpwardsSlice(end: number, upIndex: number) {
+  return end - Math.ceil((end - upIndex) / 2);
+}
+
+function calcMidpointForDownwardsSlice(start: number, downIndex: number) {
+  return Math.floor((downIndex - start) / 2);
+}
+
 function addReflectionIndexes(
   line: string,
   indexes: RelfectionIndexes,
@@ -14,40 +38,27 @@ function addReflectionIndexes(
   const start = 0;
   const end = line.length - 1;
 
-  let isComplete = false;
-  let walkDown = end - 1;
-  let walkUp = 1;
+  let downIndex = end - 1;
+  let upIndex = 1;
 
-  while (!isComplete) {
-    if (walkDown === 1 || walkUp === end - 1) {
-      isComplete = true;
-    }
+  while (downIndex > start && upIndex < end) {
+    const upSlice = line.slice(upIndex, end + 1);
+    const downSlice = line.slice(start, downIndex + 1);
 
-    const walkUpMid = line.length - Math.ceil((end - walkUp) / 2);
-    const walkDownMid = Math.ceil((walkDown - start) / 2);
-    const walkUpSlices = [
-      line.slice(walkUp, walkUpMid),
-      line.slice(walkUpMid, line.length).split("").reverse().join(""),
-    ];
-    const walkDownSlices = [
-      line.slice(start, walkDownMid),
-      line
-        .slice(walkDownMid, walkDown + 1)
-        .split("")
-        .reverse()
-        .join(""),
+    const slicesAndMidpointFuncs: [string, () => number][] = [
+      [upSlice, () => calcMidpointForUpwardsSlice(end, upIndex)],
+      [downSlice, () => calcMidpointForDownwardsSlice(start, downIndex)],
     ];
 
-    if (walkUpSlices[0] === walkUpSlices[1]) {
-      indexes[walkUpMid - 1] = (indexes[walkUpMid - 1] ?? 0) + 1;
-    }
+    slicesAndMidpointFuncs.forEach(([slice, calcMidpoint]) => {
+      if (isReflected(slice)) {
+        const mid = calcMidpoint();
+        indexes[mid] = (indexes[mid] ?? 0) + 1;
+      }
+    });
 
-    if (walkDownSlices[0] === walkDownSlices[1]) {
-      indexes[walkDownMid] = (indexes[walkDownMid] ?? 0) + 1;
-    }
-
-    walkDown -= 2;
-    walkUp += 2;
+    downIndex -= 2;
+    upIndex += 2;
   }
 
   return indexes;
@@ -77,14 +88,15 @@ function calcReflectionTotal(reflection: Reflection): number {
 
 function sumPatternsReducer(sum: number, { rows, cols }: Pattern): number {
   let reflection: Reflection | undefined;
-  let reflectionIndex = getReflectionIndex(rows);
-  if (reflectionIndex !== undefined) {
-    reflection = { index: reflectionIndex, type: "vertical" };
+  const verticalReflectionIndex = getReflectionIndex(rows);
+  if (verticalReflectionIndex !== undefined) {
+    reflection = { index: verticalReflectionIndex, type: "vertical" };
   } else {
-    reflectionIndex = getReflectionIndex(cols);
-    reflection = reflectionIndex
-      ? { index: reflectionIndex, type: "horizontal" }
-      : undefined;
+    const horizontalReflectionIndex = getReflectionIndex(cols);
+    reflection =
+      horizontalReflectionIndex !== undefined
+        ? { index: horizontalReflectionIndex, type: "horizontal" }
+        : undefined;
   }
 
   if (!reflection) throw new Error("No reflection found!");
