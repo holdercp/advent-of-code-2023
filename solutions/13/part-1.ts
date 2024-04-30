@@ -5,7 +5,7 @@ type Reflection = {
   type: "horizontal" | "vertical";
 };
 
-type RelfectionIndexes = Record<string, number>;
+type ReflectionIndexes = Record<string, number>;
 
 function isReflected(line: string) {
   let j = line.length - 1;
@@ -33,8 +33,8 @@ function calcMidpointForDownwardsSlice(start: number, downIndex: number) {
 
 function addReflectionIndexes(
   line: string,
-  indexes: RelfectionIndexes,
-): RelfectionIndexes {
+  indexes: ReflectionIndexes,
+): ReflectionIndexes {
   const start = 0;
   const end = line.length - 1;
 
@@ -67,7 +67,7 @@ function addReflectionIndexes(
 function getReflectionIndex(
   pattern: Pattern["rows"] | Pattern["cols"],
 ): number | undefined {
-  const indexes: RelfectionIndexes = {};
+  const indexes: ReflectionIndexes = {};
 
   const allIndexes = pattern.reduce((indexes, line) => {
     return addReflectionIndexes(line, indexes);
