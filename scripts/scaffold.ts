@@ -30,7 +30,7 @@ for await (const file of scaffoldGlob.scan(scaffoldDir)) {
   const output = Bun.file(`${solutionDir}/${file}`);
 
   // Remove the ts-nocheck comment from our scaffold lib.ts
-  if (file === "lib.ts") {
+  if (file === "lib.ts" || file === "index.ts") {
     const libData = await input.text();
     const tsEnabledData = libData.replace("// @ts-nocheck", "").trimStart();
     await Bun.write(output, tsEnabledData);
