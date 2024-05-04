@@ -6,8 +6,8 @@ export enum Rock {
   CUBE = "#",
 }
 
-export async function parseInput() {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined) {
+  const input = await readInput(import.meta.dir, example);
 
   const platform: Rock[] = [];
   input.split("\n").forEach((line) => {

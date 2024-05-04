@@ -2,10 +2,7 @@ export function padDay(day: string) {
   return day.padStart(2, "0");
 }
 
-export async function readInput(
-  dir: string,
-  example: "example" | undefined = undefined,
-) {
+export async function readInput(dir: string, example: boolean | undefined) {
   const file = `${dir}/input${example ? "-example" : ""}.txt`;
   const input = await Bun.file(file).text();
 

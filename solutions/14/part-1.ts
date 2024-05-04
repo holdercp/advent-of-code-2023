@@ -63,8 +63,8 @@ function sumTotalLoadReducer(sum: number, column: string) {
   return sum + columnLoad;
 }
 
-export async function solve(): Promise<number> {
-  const platform = await parseInput();
+export async function solve(example: boolean | undefined): Promise<number> {
+  const platform = await parseInput(example);
 
   return platform.reduce(sumTotalLoadReducer, 0);
 }
