@@ -86,8 +86,8 @@ function sumArrangementCounts(records: ConditionRecord[]): number {
   return records.reduce(sumArrangementsReducer, 0);
 }
 
-export async function solve() {
-  const records = await parseInput("part2");
+export async function solve(example: boolean | undefined) {
+  const records = await parseInput(example, "part2");
 
   return sumArrangementCounts(records);
 }

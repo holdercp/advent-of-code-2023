@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
-export async function solve() {
-  const { times, distances } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { times, distances } = await parseInput(example);
 
   const winners = [];
   for (let i = 0; i < times.length; i++) {

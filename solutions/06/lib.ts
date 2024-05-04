@@ -9,8 +9,10 @@ function parseRaw(s: string, delimiter = "") {
     .map(Number);
 }
 
-export async function parseInput() {
-  const [timeRaw, disRaw] = (await readInput(import.meta.dir)).split("\n");
+export async function parseInput(example: boolean | undefined) {
+  const [timeRaw, disRaw] = (await readInput(import.meta.dir, example)).split(
+    "\n",
+  );
 
   const times = parseRaw(timeRaw, "Time: ");
   const distances = parseRaw(disRaw, "Distance: ");

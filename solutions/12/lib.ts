@@ -16,8 +16,11 @@ function unfold(line: string): [string, string] {
   return [new Array(5).fill(list).join("?"), new Array(5).fill(sizes).join()];
 }
 
-export async function parseInput(part: "part1" | "part2" = "part1") {
-  const lines = (await readInput(import.meta.dir)).split("\n");
+export async function parseInput(
+  example: boolean | undefined,
+  part: "part1" | "part2" = "part1",
+) {
+  const lines = (await readInput(import.meta.dir, example)).split("\n");
   const records: ConditionRecord[] = lines.map((line) => {
     const [springs, damages] =
       part === "part2" ? unfold(line) : line.split(" ");

@@ -15,8 +15,8 @@ export function findDuplicates(a: number[], b: number[]) {
   return d;
 }
 
-export async function parseInput() {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined) {
+  const input = await readInput(import.meta.dir, example);
   const cards = input
     .split("\n")
     .map((c) => c.split(": ")[1])

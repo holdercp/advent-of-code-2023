@@ -16,8 +16,8 @@ function isPossible(gameTuple: [keyof Games, Reveal[]]) {
   );
 }
 
-export async function solve() {
-  const games = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const games = await parseInput(example);
 
   const possibleGameIds = Object.entries(games)
     .filter(isPossible)

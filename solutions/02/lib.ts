@@ -28,8 +28,8 @@ function parseColorPair(pair: string): [Color, number] {
   return [color, countInt];
 }
 
-export async function parseInput() {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined) {
+  const input = await readInput(import.meta.dir, example);
   const games = input.split("\n").reduce<Games>((g, l, i) => {
     const [, revealsRaw] = l.split(": ");
     const reveals = revealsRaw.split("; ");

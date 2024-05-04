@@ -203,13 +203,13 @@ function createHandSorter(typeChecker: (h: Hand) => HandType) {
 export const handSorter = createHandSorter(getHandType);
 export const wildHandSorter = createHandSorter(getHandTypeWithWild);
 
-export async function parseInput(part2 = false) {
+export async function parseInput(example: boolean | undefined, part2 = false) {
   if (part2) {
     // @ts-expect-error: Set the enum object at runtime so J is the weakest card
     Card.J = -1;
   }
 
-  const hands = (await readInput(import.meta.dir))
+  const hands = (await readInput(import.meta.dir, example))
     .split("\n")
     .map((h): Hand => {
       const [cards, bid] = h.split(" ");

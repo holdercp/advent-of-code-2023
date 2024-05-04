@@ -26,8 +26,10 @@ function rawToPatternMapper(raw: string): Pattern {
   } as Pattern);
 }
 
-export async function parseInput(): Promise<Pattern[]> {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(
+  example: boolean | undefined,
+): Promise<Pattern[]> {
+  const input = await readInput(import.meta.dir, example);
   const patternsRaw = input.split("\n\n");
   const patterns: Pattern[] = patternsRaw.map(rawToPatternMapper);
 

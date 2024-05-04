@@ -14,8 +14,8 @@ function getAdj(i: number, len: number) {
   ];
 }
 
-export async function solve() {
-  const { schematic, lineLen } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { schematic, lineLen } = await parseInput(example);
 
   let sum = 0;
   const posNumMap: { [k: string]: { id: number; value: number } } = {};

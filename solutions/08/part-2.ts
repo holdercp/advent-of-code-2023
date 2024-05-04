@@ -27,8 +27,8 @@ async function findMinimumMoves(
   return moves;
 }
 
-export async function solve() {
-  const { instructions, nodes } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { instructions, nodes } = await parseInput(example);
 
   const startingNodeIds = Object.keys(nodes).filter((id) => id.endsWith("A"));
 

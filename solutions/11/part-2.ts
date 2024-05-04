@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
-export async function solve() {
-  const galaxies = await parseInput(true);
+export async function solve(example: boolean | undefined) {
+  const galaxies = await parseInput(example, true);
 
   let total = 0;
   let galaxy;

@@ -23,10 +23,10 @@ function parseNodes(raw: string) {
   }, {} as NodeMap);
 }
 
-export async function parseInput() {
-  const [instructionsRaw, nodesRaw] = (await readInput(import.meta.dir)).split(
-    "\n\n",
-  );
+export async function parseInput(example: boolean | undefined) {
+  const [instructionsRaw, nodesRaw] = (
+    await readInput(import.meta.dir, example)
+  ).split("\n\n");
 
   const instructions = instructionsRaw.split("") as Instruction[];
   const nodes = parseNodes(nodesRaw);

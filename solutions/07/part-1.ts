@@ -1,7 +1,7 @@
 import { handSorter, parseInput } from "./lib";
 
-export async function solve() {
-  const hands = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const hands = await parseInput(example);
 
   const sortedHands = hands.sort(handSorter);
 

@@ -1,7 +1,7 @@
 import { parseInput, findDuplicates } from "./lib";
 
-export async function solve() {
-  const cards = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const cards = await parseInput(example);
   const copies = Array(cards.length).fill(1);
 
   cards.forEach((c, i) => {

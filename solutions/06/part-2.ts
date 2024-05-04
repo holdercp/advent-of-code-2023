@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
-export async function solve() {
-  const { distance, time } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { distance, time } = await parseInput(example);
 
   let max = 0;
   let min = 0;

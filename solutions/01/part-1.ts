@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
-export async function solve() {
-  const calibration = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const calibration = await parseInput(example);
 
   const corrected = calibration.map((c) => {
     const digits = c.replaceAll(/[^0-9]/g, "");

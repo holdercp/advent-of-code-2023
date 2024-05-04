@@ -10,8 +10,8 @@ export function getDifferences(history: number[]) {
   return diffs;
 }
 
-export async function parseInput() {
-  const histories = (await readInput(import.meta.dir))
+export async function parseInput(example: boolean | undefined) {
+  const histories = (await readInput(import.meta.dir, example))
     .split("\n")
     .map((h) => h.split(" ").map(Number));
 

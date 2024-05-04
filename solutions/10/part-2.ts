@@ -246,8 +246,8 @@ function calcInsideCount(loop: Position[], grid: string[][], dir: Direction) {
   return inside.size;
 }
 
-export async function solve() {
-  const { loop, pipeGrid } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { loop, pipeGrid } = await parseInput(example);
   // const dir = determineInsideDir(loop);
 
   const insideCount = calcInsideCount(loop, pipeGrid, "w");

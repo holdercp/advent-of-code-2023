@@ -13,8 +13,8 @@ function mapBuilder(mapData: DestMap[]) {
   };
 }
 
-export async function solve() {
-  const { seeds, maps } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { seeds, maps } = await parseInput(example);
 
   const locations = seeds
     .map(mapBuilder(maps["seed-to-soil"]))

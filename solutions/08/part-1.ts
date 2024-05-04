@@ -1,7 +1,7 @@
 import { parseInput } from "./lib";
 
-export async function solve() {
-  const { instructions, nodes } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { instructions, nodes } = await parseInput(example);
 
   let node = nodes["AAA"];
   let moves = 0;

@@ -107,7 +107,7 @@ function sumPatternsReducer(sum: number, { rows, cols }: Pattern): number {
 }
 
 export async function solve(): Promise<number> {
-  const patterns = await parseInput();
+  const patterns = await parseInput(example);
 
   return patterns.reduce(sumPatternsReducer, 0);
 }

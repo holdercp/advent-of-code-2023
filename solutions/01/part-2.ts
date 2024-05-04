@@ -44,8 +44,8 @@ function convertWordToDigit(word: string) {
   throw new Error(`cannot convert ${word} to digit`);
 }
 
-export async function solve() {
-  const calibration = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const calibration = await parseInput(example);
 
   const reversedWords = digitWords.map((w) => utils.reverseString(w));
 

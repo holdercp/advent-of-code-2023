@@ -18,7 +18,7 @@ function calcPrevValue(history: number[]) {
   return starts.reduceRight((prev, current) => current - prev, 0);
 }
 
-export async function solve() {
-  const histories = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const histories = await parseInput(example);
   return histories.reduce((sum, h) => sum + calcPrevValue(h), 0);
 }

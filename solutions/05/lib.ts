@@ -73,8 +73,8 @@ function parsedSeedPairs(s: string) {
   return parsed;
 }
 
-export async function parseInput() {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined) {
+  const input = await readInput(import.meta.dir, example);
   const [seedsRaw, ...mapsRaw] = input.split("\n\n");
 
   const seeds = parseSeeds(seedsRaw);

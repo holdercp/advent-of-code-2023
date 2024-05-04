@@ -18,7 +18,7 @@ function calcNextValue(history: number[]) {
   return ends.reduceRight((prev, current) => prev + current, 0);
 }
 
-export async function solve() {
-  const histories = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const histories = await parseInput(example);
   return histories.reduce((sum, h) => sum + calcNextValue(h), 0);
 }

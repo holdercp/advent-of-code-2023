@@ -148,8 +148,8 @@ function getPipeLoop(g: string[][]) {
   return loop;
 }
 
-export async function parseInput() {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined) {
+  const input = await readInput(import.meta.dir, example);
   const pipeGrid = buildPipeGrid(input);
   const loop = getPipeLoop(pipeGrid);
 

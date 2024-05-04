@@ -55,8 +55,8 @@ function findGalaxies(
   return g;
 }
 
-export async function parseInput(part2 = false) {
-  const input = await readInput(import.meta.dir);
+export async function parseInput(example: boolean | undefined, part2 = false) {
+  const input = await readInput(import.meta.dir, example);
   const universe = buildUniverse(input);
 
   const emptyCols = findEmptyCols(universe);

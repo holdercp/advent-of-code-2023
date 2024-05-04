@@ -83,8 +83,8 @@ function mapBuilder(mapData: DestMap[]) {
   };
 }
 
-export async function solve() {
-  const { seedPairs, maps } = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const { seedPairs, maps } = await parseInput(example);
 
   const locations = seedPairs
     .flatMap(mapBuilder(maps["seed-to-soil"]))

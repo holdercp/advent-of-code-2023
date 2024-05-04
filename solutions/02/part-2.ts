@@ -20,8 +20,8 @@ function findFewest(game: Reveal[]) {
   return maxes;
 }
 
-export async function solve() {
-  const games = await parseInput();
+export async function solve(example: boolean | undefined) {
+  const games = await parseInput(example);
 
   const fewest = Object.values(games).map(findFewest);
 
